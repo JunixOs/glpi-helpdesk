@@ -16,8 +16,8 @@ services:
     volumes:
       - "glpi_data:/var/glpi"
 
-    expose:
-      - "80"
+    ports:
+      - "8080:80"
 
   db:
     image: "mariadb:11.8"
