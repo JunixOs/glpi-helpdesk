@@ -1,0 +1,48 @@
+services:
+  app:
+    image: "glpi/glpi:11.0.0"
+    restart: "unless-stopped"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      GLPI_DB_HOST: "db"
+      GLPI_DB_NAME: "glpi"
+      GLPI_DB_USER: "glpi"
+      GLPI_DB_PASSWORD: "${GLPI_DB_PASSWORD}"
+
+    volumes:
+      - "glpi_data:/var/glpi"
+
+    expose:
+      - "80"
+
+  db:
+    image: "mariadb:11.8"
+    restart: "unless-stopped"
+
+    environment:
+      MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
+      MARIADB_DATABASE: "glpi"
+      MARIADB_USER: "glpi"
+      MARIADB_PASSWORD: "${GLPI_DB_PASSWORD}"
+
+    volumes:
+      - "db_data:/var/lib/mysql"
+
+    healthcheck:
+      test:
+        - CMD
+        - healthcheck.sh
+        - "--connect"
+        - "--innodb_initialized"
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  glpi_data:
+  db_data:
