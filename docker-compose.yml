@@ -3,6 +3,8 @@ services:
     image: "glpi/glpi:11.0.0"
     restart: "unless-stopped"
 
+    container_name: glpi-app
+
     depends_on:
       db:
         condition: service_healthy
@@ -17,11 +19,13 @@ services:
       - "glpi_data:/var/glpi"
 
     ports:
-      - "8080:80"
+      - "${GLPI_PORT}:80"
 
   db:
     image: "mariadb:11.8"
     restart: "unless-stopped"
+
+    container_name: glpi-db-mariadb
 
     environment:
       MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
